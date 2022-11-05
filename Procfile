@@ -1,0 +1,1 @@
+web: ./build/install/ru.hovadur.receipt-scanner-backend/bin/ru.hovadur.receipt-scanner-backend
