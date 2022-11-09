@@ -1,4 +1,4 @@
-package ru.hovadur
+package ru.hovadur.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import ru.hovadur.database.Users
+import ru.hovadur.database.entities.Users
 
 object DatabaseFactory {
     private var database: Database? = null

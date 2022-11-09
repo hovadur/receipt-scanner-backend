@@ -1,4 +1,4 @@
-package ru.hovadur.route.v1.model
+package ru.hovadur.route.v1.auth.data.dto
 
 import kotlinx.serialization.Serializable
 

@@ -7,7 +7,7 @@ import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.response.respond
-import ru.hovadur.JwtConfig
+import ru.hovadur.route.v1.auth.data.JwtConfig
 
 fun Application.configureAuthentication(jwtConfig: JwtConfig) {
     install(Authentication) {

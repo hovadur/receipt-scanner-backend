@@ -1,16 +1,15 @@
-package ru.hovadur.route.v1.login
+package ru.hovadur.route.v1.auth.data
 
-import ru.hovadur.JwtConfig
-import ru.hovadur.database.UserDTO
-import ru.hovadur.database.Users
-import ru.hovadur.route.v1.model.LoginResp
-import ru.hovadur.route.v1.model.RegisterResp
-import ru.hovadur.route.v1.model.RegisterResult
+import ru.hovadur.database.dao.UsersDao
+import ru.hovadur.route.v1.auth.data.dto.LoginResp
+import ru.hovadur.route.v1.auth.data.dto.RegisterResp
+import ru.hovadur.route.v1.auth.data.dto.RegisterResult
+import ru.hovadur.route.v1.auth.domain.model.User
 
 class UserController(private val jwtConfig: JwtConfig) {
 
     suspend fun isValid(value: LoginResp): Boolean {
-        val userDto = Users.fetch(value.login)
+        val userDto = UsersDao.fetch(value.login)
         return if (userDto == null) {
             false
         } else {
@@ -19,10 +18,10 @@ class UserController(private val jwtConfig: JwtConfig) {
     }
 
     suspend fun insert(value: RegisterResp): RegisterResult {
-        val userDto = Users.fetch(value.login)
+        val userDto = UsersDao.fetch(value.login)
         return if (userDto == null) {
-            Users.insert(
-                UserDTO(
+            UsersDao.insert(
+                User(
                     login = value.login,
                     pass = jwtConfig.hash(value.password),
                     email = value.email,

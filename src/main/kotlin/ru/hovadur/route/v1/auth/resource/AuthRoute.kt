@@ -1,4 +1,4 @@
-package ru.hovadur.route.v1.login
+package ru.hovadur.route.v1.auth
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -7,10 +7,11 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
-import ru.hovadur.JwtConfig
-import ru.hovadur.route.v1.model.LoginResp
-import ru.hovadur.route.v1.model.RegisterResp
-import ru.hovadur.route.v1.model.RegisterResult
+import ru.hovadur.route.v1.auth.data.JwtConfig
+import ru.hovadur.route.v1.auth.data.UserController
+import ru.hovadur.route.v1.auth.data.dto.LoginResp
+import ru.hovadur.route.v1.auth.data.dto.RegisterResp
+import ru.hovadur.route.v1.auth.data.dto.RegisterResult
 
 fun Route.authRoute(jwtConfig: JwtConfig) {
     val userController = UserController(jwtConfig)

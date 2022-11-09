@@ -1,4 +1,4 @@
-package ru.hovadur
+package ru.hovadur.route.v1.auth.data
 
 import com.auth0.jwk.JwkProviderBuilder
 import com.auth0.jwt.JWT
