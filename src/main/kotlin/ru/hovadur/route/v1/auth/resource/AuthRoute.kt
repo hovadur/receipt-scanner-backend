@@ -2,6 +2,9 @@ package ru.hovadur.route.v1.auth.resource
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.header
 import io.ktor.server.response.respond
@@ -10,6 +13,8 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 import ru.hovadur.route.v1.auth.data.UserController
+import ru.hovadur.route.v1.auth.data.dto.refresh.RefreshResp
+import ru.hovadur.route.v1.auth.data.dto.refresh.RefreshResult
 import ru.hovadur.route.v1.auth.data.dto.request.RequestResp
 import ru.hovadur.route.v1.auth.data.dto.request.RequestResult
 import ru.hovadur.route.v1.auth.data.dto.verify.VerifyResp
@@ -40,6 +45,20 @@ fun Route.authRoute() {
                     is VerifyResult.Success -> call.respond(HttpStatusCode.OK, hashMapOf("token" to result.token))
                     is VerifyResult.BadPhone -> call.respond(HttpStatusCode.BadRequest, "bad phone")
                     is VerifyResult.Error -> call.respond(result.status, result.message)
+                }
+            }
+        }
+        authenticate("auth-jwt") {
+            route("/refresh") {
+                post {
+                    val principal = call.principal<JWTPrincipal>()
+                    val login = principal!!.payload.getClaim("login").asString()
+                    val value = call.receive<RefreshResp>()
+                    when (val result = userController.refresh(value, login)) {
+                        is RefreshResult.Success -> call.respond(HttpStatusCode.OK)
+                        is RefreshResult.BadUser -> call.respond(HttpStatusCode.Unauthorized)
+                        is RefreshResult.Error -> call.respond(result.status, result.message)
+                    }
                 }
             }
         }

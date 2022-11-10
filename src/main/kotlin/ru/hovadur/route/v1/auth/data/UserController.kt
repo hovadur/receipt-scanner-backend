@@ -3,6 +3,7 @@ package ru.hovadur.route.v1.auth.data
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.accept
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -11,6 +12,9 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import ru.hovadur.data.AppConfig
 import ru.hovadur.database.dao.UsersDao
+import ru.hovadur.route.v1.auth.data.dto.refresh.IrkktRefreshReq
+import ru.hovadur.route.v1.auth.data.dto.refresh.RefreshResp
+import ru.hovadur.route.v1.auth.data.dto.refresh.RefreshResult
 import ru.hovadur.route.v1.auth.data.dto.request.IrkktRequest
 import ru.hovadur.route.v1.auth.data.dto.request.RequestResp
 import ru.hovadur.route.v1.auth.data.dto.request.RequestResult
@@ -66,6 +70,25 @@ class UserController(
                 VerifyResult.Success(token)
             }
         } else VerifyResult.Error(response.status, response.bodyAsText())
+    }
+
+    suspend fun refresh(value: RefreshResp, phone: String): RefreshResult {
+        val user = UsersDao.fetch(phone) ?: return RefreshResult.BadUser
+        val irkktHost = appConfig.irkktHost
+        val response = client.post("$irkktHost/v2/mobile/users/refresh") {
+            header("Device-OS", value.os)
+            header("Device-Id", value.deviceId)
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Any)
+            setBody(IrkktRefreshReq(refreshToken = user.irkktRefreshToken.orEmpty()))
+        }
+        return if (response.status == HttpStatusCode.OK) {
+            val resp = response.body<IrkktVerifyResp>()
+            UsersDao.update(phone, resp.sessionId, resp.refreshToken)
+            RefreshResult.Success
+        } else {
+            RefreshResult.Error(response.status, response.bodyAsText())
+        }
     }
 
     private fun String?.onlyDigitPhonePlus7(): String? {

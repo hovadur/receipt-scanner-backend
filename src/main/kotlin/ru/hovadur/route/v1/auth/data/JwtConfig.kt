@@ -4,7 +4,6 @@ import com.auth0.jwk.JwkProviderBuilder
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.server.auth.jwt.JWTAuthenticationProvider
-import io.ktor.util.hex
 import ru.hovadur.data.AppConfig
 import java.security.KeyFactory
 import java.security.interfaces.RSAPrivateKey
@@ -12,16 +11,12 @@ import java.security.interfaces.RSAPublicKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.util.*
 import java.util.concurrent.TimeUnit
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
 
 class JwtConfig(private val appConfig: AppConfig) {
     private val privateKey = appConfig.privateKey
     private val issuer = appConfig.issuer
     private val audience = appConfig.audience
     private val myRealm = appConfig.myRealm
-    private val hashKey = hex(appConfig.secretKey)
-    private val hmacKey = SecretKeySpec(hashKey, "HmacSHA1")
 
     fun buildJwtVerifier(config: JWTAuthenticationProvider.Config) {
         config.verifier(getJwkProvider(), issuer) {
@@ -38,14 +33,8 @@ class JwtConfig(private val appConfig: AppConfig) {
             .withAudience(audience)
             .withIssuer(issuer)
             .withClaim("login", login)
-            .withExpiresAt(Date(System.currentTimeMillis() + 60000))
+            .withExpiresAt(Date(System.currentTimeMillis() + 24 * 60 * 60000))
             .sign(Algorithm.RSA256(publicKey as RSAPublicKey, privateKey as RSAPrivateKey))
-    }
-
-    fun hash(password: String): String {
-        val hmac = Mac.getInstance("HmacSHA1")
-        hmac.init(hmacKey)
-        return hex(hmac.doFinal(password.toByteArray(Charsets.UTF_8)))
     }
 
     private fun getJwkProvider() = JwkProviderBuilder(issuer)
