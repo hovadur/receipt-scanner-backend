@@ -15,6 +15,7 @@ class AppConfig {
         internal set
     var secretKey: String = ""
         internal set
+    val irkktHost = "https://irkkt-mobile.nalog.ru:8888"
 
     fun init(environment: ApplicationEnvironment) {
         privateKey = environment.config.config("jwt").property("privateKey").getString()
