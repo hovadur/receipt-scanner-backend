@@ -7,9 +7,11 @@ import io.ktor.server.auth.Authentication
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.response.respond
+import org.koin.ktor.ext.get
 import ru.hovadur.route.v1.auth.data.JwtConfig
 
-fun Application.configureAuthentication(jwtConfig: JwtConfig) {
+fun Application.configureAuthentication() {
+    val jwtConfig: JwtConfig = get()
     install(Authentication) {
         jwt("auth-jwt") {
             realm = jwtConfig.getRealm()

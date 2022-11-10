@@ -1,4 +1,4 @@
-package ru.hovadur.route.v1.auth
+package ru.hovadur.route.v1.auth.resource
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -7,14 +7,16 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import org.koin.ktor.ext.inject
 import ru.hovadur.route.v1.auth.data.JwtConfig
 import ru.hovadur.route.v1.auth.data.UserController
 import ru.hovadur.route.v1.auth.data.dto.LoginResp
 import ru.hovadur.route.v1.auth.data.dto.RegisterResp
 import ru.hovadur.route.v1.auth.data.dto.RegisterResult
 
-fun Route.authRoute(jwtConfig: JwtConfig) {
-    val userController = UserController(jwtConfig)
+fun Route.authRoute() {
+    val jwtConfig: JwtConfig by inject()
+    val userController: UserController by inject()
     route("/register") {
         post {
             val register = call.receive<RegisterResp>()

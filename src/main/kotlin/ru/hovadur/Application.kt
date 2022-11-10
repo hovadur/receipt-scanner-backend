@@ -10,10 +10,11 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import org.koin.core.context.startKoin
+import org.koin.ktor.ext.inject
+import ru.hovadur.data.AppConfig
 import ru.hovadur.database.DatabaseFactory
 import ru.hovadur.plugins.configureAuthentication
-import ru.hovadur.route.v1.auth.data.JwtConfig
-import ru.hovadur.route.v1.auth.authRoute
+import ru.hovadur.route.v1.auth.resource.authRoute
 import java.io.File
 
 fun main(args: Array<String>): Unit =
@@ -24,15 +25,16 @@ fun Application.module() {
     startKoin {
         modules(appModule)
     }
-    val jwtConfig = JwtConfig(environment)
+    val appConfig by inject<AppConfig>()
+    appConfig.init(environment)
     DatabaseFactory.init()
     install(ContentNegotiation) {
         json()
     }
-    configureAuthentication(jwtConfig)
+    configureAuthentication()
     routing {
         route("api/v1") {
-            authRoute(jwtConfig)
+            authRoute()
         }
         static(".well-known") {
             staticRootFolder = File("certs")
