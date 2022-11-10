@@ -6,11 +6,13 @@ import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
+import io.ktor.server.request.receiveText
 import io.ktor.server.response.header
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
+import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
 import ru.hovadur.route.v1.auth.data.UserController
 import ru.hovadur.route.v1.auth.data.dto.refresh.RefreshResp
@@ -25,7 +27,9 @@ fun Route.authRoute() {
     route("/auth") {
         route("/request") {
             post {
-                val user = call.receive<RequestResp>()
+                val userString = call.receiveText()
+                call.application.environment.log.info(userString)
+                val user = Json.decodeFromString(RequestResp.serializer(), userString)
                 when (val result = userController.request(user)) {
                     is RequestResult.Success -> call.respond(HttpStatusCode.NoContent)
                     is RequestResult.BadPhone -> call.respond(HttpStatusCode.BadRequest, "bad phone")
