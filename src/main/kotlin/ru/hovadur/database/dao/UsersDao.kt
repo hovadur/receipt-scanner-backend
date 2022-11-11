@@ -14,7 +14,7 @@ object UsersDao {
             Users.insert {
                 it[phone] = value.phone
                 it[email] = value.email
-                it[name] = value.name
+                it[username] = value.name
                 it[irkktSessionId] = value.irkktSessionId
                 it[irkktRefreshToken] = value.irkktRefreshToken
             }
@@ -33,7 +33,7 @@ object UsersDao {
             User(
                 phone = value[Users.phone],
                 email = value[Users.email],
-                name = value[Users.name],
+                name = value[Users.username],
                 irkktSessionId = value[Users.irkktSessionId],
                 irkktRefreshToken = value[Users.irkktRefreshToken]
             )
