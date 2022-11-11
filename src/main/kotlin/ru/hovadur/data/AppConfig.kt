@@ -18,8 +18,9 @@ class AppConfig {
     fun init(environment: ApplicationEnvironment) {
         privateKey = environment.config.config("jwt").property("privateKey").getString()
         puplicKey = environment.config.config("jwt").property("publicKey").getString()
-        issuer = environment.config.config("jwt").property("issuer").getString()
-        audience = environment.config.config("jwt").property("audience").getString()
+        issuer = environment.config.config("jwt").property("issuer")
+            .getString() + environment.config.config("ktor.deployment").property("port").getString()
+        audience = issuer
         myRealm = environment.config.config("jwt").property("realm").getString()
     }
 }
